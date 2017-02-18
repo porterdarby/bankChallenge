@@ -1,5 +1,6 @@
 package com.bank.server;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
@@ -18,14 +19,15 @@ import com.sun.net.httpserver.HttpServer;
  * @author Porter Darby
  *
  */
-public class JerseyEmbeddedHTTPServer {
+public class JerseyEmbeddedHTTPServer implements Closeable {
 	public static final int PORT = 8085;
 	private static final String RESOURCE_PACKAGE = "com.bank.server.resources";
-	
+
 	// Singleton
 	private static JerseyEmbeddedHTTPServer server;
 
 	private HttpServer httpServer;
+	private boolean closed;
 
 	public static JerseyEmbeddedHTTPServer getInstance() {
 		if (server == null) {
@@ -41,8 +43,9 @@ public class JerseyEmbeddedHTTPServer {
 	private JerseyEmbeddedHTTPServer() throws IllegalArgumentException, IOException {
 		System.out.println("\nStarting the HTTP server...");
 
-		HttpServer httpServer = createHTTPServer();
+		httpServer = createHTTPServer();
 		httpServer.start();
+		this.closed = false;
 
 		System.out.println("Server Started");
 	}
@@ -65,5 +68,16 @@ public class JerseyEmbeddedHTTPServer {
 			e.printStackTrace();
 		}
 		return hostname;
+	}
+
+	@Override
+	public void close() throws IOException {
+		httpServer.stop(0);
+		this.closed = true;
+		server = null;
+	}
+
+	public boolean isClosed() {
+		return this.closed;
 	}
 }

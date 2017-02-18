@@ -9,14 +9,17 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 public class CORSFilter implements ContainerResponseFilter {
 
+	public static final String ORIGIN = "Access-Control-Allow-Origin";
+	public static final String METHODS = "Access-Control-Allow-Methods";
+	
 	@Override
 	public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
 
 		ResponseBuilder responseBuilder = Response.fromResponse(response.getResponse());
 
 		responseBuilder
-			.header("Access-Control-Allow-Origin", "*")
-			.header("Access-Control-Allow-Methods", "API, GET, POST, PUT, UPDATE, OPTIONS")
+			.header(ORIGIN, "*")
+			.header(METHODS, "GET, POST")
 			.header("Access-Control-Max-Age", "151200")
 			.header("Access-Control-Allow-Headers", "x-requested-with,Content-Type");
 

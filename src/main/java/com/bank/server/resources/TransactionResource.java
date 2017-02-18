@@ -19,40 +19,42 @@ import com.j256.ormlite.dao.Dao;
 @Path("transaction")
 public class TransactionResource {
 	private static Dao<Transaction, Integer> dao = BankingDatabase.getInstance().getTransactionDao();
-	
+
 	@GET
 	@Path("all")
 	@Produces(MediaType.APPLICATION_JSON)
 	public static List<Transaction> getAll() throws SQLException {
 		return BankingDatabase.getInstance().getTransactionDao().queryForAll();
 	}
-	
+
 	@GET
 	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public static Transaction get(@PathParam("id") int transactionId) {
 		Transaction tr = null;
-		
+
 		try {
 			tr = dao.queryForId(transactionId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return tr;
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public static Transaction createTransaction(Transaction transaction) throws SQLException {
 		try {
 			dao.create(transaction);
 		} catch (SQLException e) {
-			if(e.getCause().getMessage().contains("unique")) {
+			if (e.getCause().getMessage().contains("unique")) {
 				throw new DuplicateTransactionException(transaction);
 			}
 			e.printStackTrace();
 		}
-		return get(transaction.getId());
+		return get(transaction.getTransactionId());
 	}
 }

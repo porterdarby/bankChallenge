@@ -1,5 +1,7 @@
 package com.bank.database;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.bank.models.Account;
@@ -10,9 +12,10 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
-public class BankingDatabase {
+public class BankingDatabase implements Closeable {
 	private Dao<Transaction, Integer> transactionDao;
 	private Dao<Account, Integer> accountDao;
+	private ConnectionSource connectionSource;
 	private static BankingDatabase bankingDatabase;
 
 	public static BankingDatabase getInstance() {
@@ -28,7 +31,7 @@ public class BankingDatabase {
 	}
 
 	private BankingDatabase() throws ClassNotFoundException, SQLException {
-		ConnectionSource connectionSource = getConnectionSource();
+		connectionSource = getConnectionSource();
 		createDaos(connectionSource);
 		createTables();
 	}
@@ -48,9 +51,19 @@ public class BankingDatabase {
 		accountDao = DaoManager.createDao(connectionSource, Account.class);
 	}
 
-	private void createTables() throws SQLException {
-		TableUtils.createTable(transactionDao);
-		TableUtils.createTable(accountDao);
+	private void createTables() {
+		try {
+			TableUtils.createTable(transactionDao);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			TableUtils.createTable(accountDao);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public Dao<Transaction, Integer> getTransactionDao() {
@@ -59,5 +72,15 @@ public class BankingDatabase {
 
 	public Dao<Account, Integer> getAccountDao() {
 		return accountDao;
+	}
+
+	@Override
+	public void close() throws IOException {
+		connectionSource.close();
+		bankingDatabase = null;
+	}
+
+	public boolean isClosed() {
+		return !connectionSource.isOpen("");
 	}
 }
