@@ -15,6 +15,7 @@ import com.sun.net.httpserver.HttpServer;
 
 /**
  * A simple Jersey Embedded HTTP server.
+ * Adapted from: http://crunchify.com/how-to-start-embedded-http-jersey-server-during-java-application-startup/
  * 
  * @author Porter Darby
  *
@@ -51,13 +52,15 @@ public class JerseyEmbeddedHTTPServer implements Closeable {
 	}
 
 	private HttpServer createHTTPServer() throws IllegalArgumentException, IOException {
-		ResourceConfig resourceConfig = new PackagesResourceConfig("com.bank.server");
+		ResourceConfig resourceConfig = new PackagesResourceConfig(RESOURCE_PACKAGE);
 		resourceConfig.getContainerResponseFilters().add(new CORSFilter());
 		return HttpServerFactory.create(getServerURI(), resourceConfig);
 	}
 
 	private URI getServerURI() {
-		return UriBuilder.fromUri("http://" + getHostname() + "/").port(PORT).build();
+		URI uri = UriBuilder.fromUri("http://" + getHostname() + "/").port(PORT).build();
+		System.out.println(uri);
+		return uri;
 	}
 
 	private String getHostname() {
