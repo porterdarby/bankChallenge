@@ -1,5 +1,6 @@
 package com.bank.models;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import com.j256.ormlite.field.DatabaseField;
@@ -12,7 +13,7 @@ public class Account {
 	@DatabaseField(id = true)
 	private int id;
 
-	@ForeignCollectionField(eager = false)
+	@ForeignCollectionField(eager = true)
 	Collection<Transaction> transactions;
 
 	public Account() {
@@ -21,6 +22,18 @@ public class Account {
 
 	public Account(int accountId) {
 		this.setId(accountId);
+	}
+	
+	public BigDecimal getBalance() {
+		BigDecimal balance = new BigDecimal("0");
+		
+		System.out.println(transactions.size());
+		
+		for(Transaction t : transactions) {
+			balance = balance.add(t.getAmount());
+		}
+
+		return balance;
 	}
 
 	public Collection<Transaction> getTransactions() {
@@ -43,7 +56,7 @@ public class Account {
 	public String toString() {
 		return "Account [id=" + id + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
