@@ -2,9 +2,7 @@ package com.bank.server;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -14,8 +12,8 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * A simple Jersey Embedded HTTP server.
- * Adapted from: http://crunchify.com/how-to-start-embedded-http-jersey-server-during-java-application-startup/
+ * A simple Jersey Embedded HTTP server. Adapted from:
+ * http://crunchify.com/how-to-start-embedded-http-jersey-server-during-java-application-startup/
  * 
  * @author Porter Darby
  *
@@ -65,11 +63,13 @@ public class JerseyEmbeddedHTTPServer implements Closeable {
 
 	private String getHostname() {
 		String hostname = "localhost";
-		try {
-			hostname = InetAddress.getLocalHost().getCanonicalHostName();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		// We're just going to use "localhost" for the hostname. I don't want to
+		// deal with
+		// try {
+		// hostname = InetAddress.getLocalHost().getCanonicalHostName();
+		// } catch (UnknownHostException e) {
+		// e.printStackTrace();
+		// }
 		return hostname;
 	}
 
