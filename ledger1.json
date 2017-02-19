@@ -1,3 +1,8 @@
 [
-	{"id": 1, "accountId": 1, "amount": -200.00}
+		{"transactionId": 1, "accountId": 1, "amount": 100.25},
+		{"transactionId": 2, "accountId": 1, "amount": -25.00},
+		{"transactionId": 3, "accountId": 2, "amount": 2000.00},
+		{"transactionId": 4, "accountId": 3, "amount": 50.00},
+		{"transactionId": 5, "accountId": 1, "amount": -25.00},
+		{"transactionId": 6, "accountId": 3, "amount": -150.00}
 ]

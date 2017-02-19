@@ -1,0 +1,91 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script language="javascript">
+function submitTransactions() {
+	var lines;
+
+	var file = $('#file_to_read')[0].files[0]
+	var fr = new FileReader();
+	fr.onload = function(e){
+	    lines = e.target.result;
+
+	    transactions = JSON.parse(lines);
+
+		$.ajax({
+			type: "POST",
+			url: "http://localhost:8085/ledger",
+			data: JSON.stringify(transactions),
+			dataType: "json",
+			contentType: "application/json",
+			success: function(data, textStatus, jqXHR){
+				setSuccessResults(data);
+				console.log(data, textStatus, jqXHR);
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				console.error(jqXHR, textStatus, errorThrown);
+			}
+		});
+	}
+	fr.readAsText(file);
+}
+
+function setResults(table, transactions) {
+	table.empty();
+
+	table.append("<tr><th>Transaction Id</th><th>Account ID</th><th>Amount</th></tr>");
+
+	for(index in transactions) {
+		transaction = transactions[index]
+		var row = "<tr><td>" + transaction.transactionId + "</td><td>" + transaction.accountId + "</td><td>" + transaction.amount + "</td></tr>"
+
+		console.log(row);
+		table.append(row);
+	}
+}
+
+function setSuccessResults(data) {
+	var successTable = $("#successTable");
+	var errorTable = $("#errorTable");
+
+	setResults(successTable, data.success);
+	setResults(errorTable, data.error);
+
+	console.log(data);
+}
+
+function transactions1() {
+	submitTransactions([
+		{"transactionId": 1, "accountId": 1, amount: 100.25},
+		{"transactionId": 2, "accountId": 1, amount: -25.00},
+		{"transactionId": 3, "accountId": 2, amount: 2000.00},
+		{"transactionId": 4, "accountId": 3, amount: 50.00},
+		{"transactionId": 5, "accountId": 1, amount: -25.00},
+		{"transactionId": 6, "accountId": 3, amount: -150.00}
+	]);
+}
+</script>
+</head>
+<body>
+
+Select a JSON file to read in:
+<input type="file" id="file_to_read">
+<input type="submit" onclick="submitTransactions()">
+
+<br />
+
+<a href="http://localhost:8085/account/all">View All Accounts</a>
+<a href="http://localhost:8085/transaction/all">View All Transactions</a>
+
+<table>
+<th>Success</th><th>Error</th>
+<tr><td>
+	<table id="successTable">
+	</table>
+</td><td>
+	<table id="errorTable">
+	</table>
+</td></tr>
+</table>
+</body>
+</html>
